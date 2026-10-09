@@ -1,6 +1,10 @@
 name: Refresh public market data
 on:
   workflow_dispatch:
+  push:
+    paths:
+      - 'scripts/update_market_data.py'
+      - '.github/workflows/market-data-refresh.yml'
   schedule:
     - cron: '17 * * * 1-5'
 permissions:
