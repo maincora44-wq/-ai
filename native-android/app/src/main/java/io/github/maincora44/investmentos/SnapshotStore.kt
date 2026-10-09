@@ -12,7 +12,13 @@ data class PortfolioSnapshot(
     val observedTotal: Long,
     val fiveAccountTotal: Long,
     val accountCount: Int,
-    val provisional: Boolean
+    val activeTotal: Long,
+    val retirementTotal: Long,
+    val isaTotal: Long,
+    val employeeTotal: Long,
+    val provisional: Boolean,
+    val topExposureName: String,
+    val topExposureValue: Long
 )
 
 object SnapshotStore {
@@ -50,37 +56,89 @@ object SnapshotStore {
         require(root.optString("schema") == "portfolio-lab-private-snapshot-v1") { "Wrong JSON schema" }
         val accounts = root.getJSONArray("accounts")
         require(accounts.length() == 5) { "Expected five brokerage accounts" }
+
         var accountSum = 0L
+        var active = 0L
+        var retirement = 0L
+        var isa = 0L
+        val exposures = linkedMapOf<String, Long>()
+
         for (i in 0 until accounts.length()) {
             val account = accounts.getJSONObject(i)
+            val accountName = account.optString("name")
             val accountTotal = account.getLong("total")
             require(accountTotal >= 0) { "Negative account total" }
+
+            when (accountName) {
+                "Comprehensive" -> active = accountTotal
+                "DC", "IRP", "Pension" -> retirement = Math.addExact(retirement, accountTotal)
+                "ISA" -> isa = accountTotal
+            }
+
             val holdings = account.getJSONArray("holdings")
             var holdingSum = 0L
             for (j in 0 until holdings.length()) {
-                val value = holdings.getJSONObject(j).getLong("value")
+                val holding = holdings.getJSONObject(j)
+                val value = holding.getLong("value")
                 require(value >= 0) { "Negative holding value" }
                 holdingSum = Math.addExact(holdingSum, value)
+                val name = shortName(holding.optString("name", "Unknown"))
+                exposures[name] = Math.addExact(exposures[name] ?: 0L, value)
             }
             require(abs(holdingSum - accountTotal) <= 1L) { "Holdings do not reconcile" }
             accountSum = Math.addExact(accountSum, accountTotal)
         }
+
         val five = root.getLong("five_account_total")
         require(abs(accountSum - five) <= 1L) { "Accounts do not reconcile" }
+
         val employee = root.optJSONObject("employee_shares")
         val employeeValue = employee?.optLong("value", 0L) ?: 0L
+        require(employeeValue >= 0) { "Invalid employee share value" }
+        if (employeeValue > 0) exposures["KT&G 임직원주식"] =
+            Math.addExact(exposures["KT&G 임직원주식"] ?: 0L, employeeValue)
+
         val observed = root.getLong("observed_investments")
-        require(observed >= 0 && employeeValue >= 0) { "Invalid investment total" }
+        require(observed >= 0) { "Invalid investment total" }
         require(abs(observed - Math.addExact(five, employeeValue)) <= 1L) {
             "Observed investments do not reconcile"
         }
+
+        val top = exposures.maxByOrNull { it.value }
+
         return PortfolioSnapshot(
-            root.optString("snapshot_id", "UNKNOWN"),
-            root.optString("as_of", "UNKNOWN"),
-            observed, five, accounts.length(),
-            employee?.optString("status") == "PROVISIONAL"
+            id = root.optString("snapshot_id", "UNKNOWN"),
+            asOf = root.optString("as_of", "UNKNOWN"),
+            observedTotal = observed,
+            fiveAccountTotal = five,
+            accountCount = accounts.length(),
+            activeTotal = active,
+            retirementTotal = retirement,
+            isaTotal = isa,
+            employeeTotal = employeeValue,
+            provisional = employee?.optString("status") == "PROVISIONAL",
+            topExposureName = top?.key ?: "UNKNOWN",
+            topExposureValue = top?.value ?: 0L
         )
     }
 
+    private fun shortName(name: String): String = when {
+        name.contains("Floating Rate Treasury", ignoreCase = true) || name.contains("USFR", ignoreCase = true) ->
+            "USFR · 미 단기국채"
+        name.contains("머니마켓", ignoreCase = true) || name.contains("Money Market", ignoreCase = true) ->
+            "KODEX 미국머니마켓"
+        name.contains("나스닥100", ignoreCase = true) || name.contains("Nasdaq", ignoreCase = true) ->
+            "미국 Nasdaq 100"
+        name.contains("KRX금현물", ignoreCase = true) -> "KRX 금현물"
+        else -> if (name.length > 24) name.take(23) + "…" else name
+    }
+
     fun won(value: Long): String = "₩" + NumberFormat.getIntegerInstance(Locale.KOREA).format(value)
+
+    fun shortWon(value: Long): String {
+        val eok = value / 100_000_000.0
+        return if (value >= 100_000_000L) "₩" + String.format(Locale.KOREA, "%.2f억", eok)
+        else if (value >= 10_000L) "₩" + String.format(Locale.KOREA, "%.0f만", value / 10_000.0)
+        else won(value)
+    }
 }
