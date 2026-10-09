@@ -4,10 +4,9 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
-    android:padding="14dp"
+    android:padding="16dp"
     android:background="@drawable/widget_background">
 
-    <!-- 1) MY MONEY -->
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
@@ -18,158 +17,210 @@
             android:layout_height="wrap_content"
             android:layout_weight="1"
             android:text="INVESTMENT OS"
-            android:textSize="11sp"
             android:textStyle="bold"
+            android:textSize="14sp"
             android:textColor="#8EBCFF"/>
         <TextView
             android:id="@+id/market_time"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="MKT —"
-            android:textSize="9sp"
+            android:textSize="10sp"
             android:textColor="#8298B3"/>
     </LinearLayout>
 
-    <TextView
+    <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:text="총 투자자산"
-        android:textSize="10sp"
-        android:textColor="#9DB1C9"
-        android:layout_marginTop="4dp"/>
+        android:layout_height="0dp"
+        android:layout_weight="1.15"
+        android:orientation="vertical"
+        android:gravity="center_vertical"
+        android:padding="16dp"
+        android:layout_marginTop="10dp"
+        android:background="@drawable/widget_section">
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="총 투자자산"
+            android:textSize="12sp"
+            android:textColor="#A9BDD5"/>
+        <TextView
+            android:id="@+id/total"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="JSON 불러오기"
+            android:textSize="34sp"
+            android:textStyle="bold"
+            android:textColor="#FFFFFF"
+            android:singleLine="true"
+            android:ellipsize="end"
+            android:layout_marginTop="4dp"/>
+        <TextView
+            android:id="@+id/date"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Portfolio —"
+            android:textSize="10sp"
+            android:textColor="#7F95AE"
+            android:layout_marginTop="5dp"/>
+    </LinearLayout>
 
-    <TextView
-        android:id="@+id/total"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:text="Import snapshot"
-        android:textSize="28sp"
-        android:textStyle="bold"
-        android:textColor="#FFFFFF"
-        android:singleLine="true"
-        android:ellipsize="end"/>
-
-    <!-- 2) ASSET STRUCTURE -->
     <TextView
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:text="자산 구조"
-        android:textSize="10sp"
         android:textStyle="bold"
+        android:textSize="12sp"
         android:textColor="#9DB1C9"
-        android:layout_marginTop="8dp"/>
+        android:layout_marginTop="12dp"
+        android:layout_marginBottom="6dp"/>
 
     <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:orientation="horizontal"
-        android:layout_marginTop="3dp">
-        <TextView
-            android:id="@+id/active_asset"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
+        android:layout_height="0dp"
+        android:layout_weight="1.4"
+        android:orientation="vertical">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
             android:layout_weight="1"
-            android:text="운용
+            android:orientation="horizontal">
+            <TextView
+                android:id="@+id/active_asset"
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_weight="1"
+                android:gravity="center_vertical"
+                android:padding="14dp"
+                android:text="운용계좌
 —"
-            android:textSize="10sp"
-            android:textColor="#FFFFFF"/>
-        <TextView
-            android:id="@+id/retirement_asset"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
+                android:textSize="14sp"
+                android:textStyle="bold"
+                android:textColor="#FFFFFF"
+                android:background="@drawable/widget_section"/>
+            <TextView
+                android:id="@+id/retirement_asset"
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_weight="1"
+                android:layout_marginStart="8dp"
+                android:gravity="center_vertical"
+                android:padding="14dp"
+                android:text="연금·퇴직
+—"
+                android:textSize="14sp"
+                android:textStyle="bold"
+                android:textColor="#FFFFFF"
+                android:background="@drawable/widget_section"/>
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
             android:layout_weight="1"
-            android:text="연금
+            android:layout_marginTop="8dp"
+            android:orientation="horizontal">
+            <TextView
+                android:id="@+id/isa_asset"
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_weight="1"
+                android:gravity="center_vertical"
+                android:padding="14dp"
+                android:text="ISA
 —"
-            android:textSize="10sp"
-            android:textColor="#FFFFFF"/>
-        <TextView
-            android:id="@+id/isa_asset"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:text="ISA
+                android:textSize="14sp"
+                android:textStyle="bold"
+                android:textColor="#FFFFFF"
+                android:background="@drawable/widget_section"/>
+            <TextView
+                android:id="@+id/employee_asset"
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_weight="1"
+                android:layout_marginStart="8dp"
+                android:gravity="center_vertical"
+                android:padding="14dp"
+                android:text="임직원주식
 —"
-            android:textSize="10sp"
-            android:textColor="#FFFFFF"/>
-        <TextView
-            android:id="@+id/employee_asset"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:text="임직원
-—"
-            android:textSize="10sp"
-            android:textColor="#FFFFFF"/>
+                android:textSize="14sp"
+                android:textStyle="bold"
+                android:textColor="#FFFFFF"
+                android:background="@drawable/widget_section"/>
+        </LinearLayout>
     </LinearLayout>
 
-    <!-- 3) MARKET STATUS -->
     <TextView
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:text="시장 상태"
-        android:textSize="10sp"
         android:textStyle="bold"
+        android:textSize="12sp"
         android:textColor="#9DB1C9"
-        android:layout_marginTop="9dp"/>
+        android:layout_marginTop="12dp"
+        android:layout_marginBottom="6dp"/>
 
     <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:orientation="horizontal"
-        android:layout_marginTop="3dp">
+        android:layout_height="0dp"
+        android:layout_weight="1.1"
+        android:orientation="horizontal">
         <TextView
             android:id="@+id/us_market"
             android:layout_width="0dp"
-            android:layout_height="wrap_content"
+            android:layout_height="match_parent"
             android:layout_weight="1"
+            android:gravity="center"
+            android:padding="12dp"
             android:text="미국
 —"
+            android:textSize="15sp"
             android:textStyle="bold"
-            android:textSize="12sp"
-            android:textColor="#F4C76A"/>
+            android:textColor="#F4C76A"
+            android:background="@drawable/widget_section"/>
         <TextView
             android:id="@+id/kr_market"
             android:layout_width="0dp"
-            android:layout_height="wrap_content"
+            android:layout_height="match_parent"
             android:layout_weight="1"
+            android:layout_marginStart="8dp"
+            android:gravity="center"
+            android:padding="12dp"
             android:text="한국
 —"
+            android:textSize="15sp"
             android:textStyle="bold"
-            android:textSize="12sp"
-            android:textColor="#F4C76A"/>
+            android:textColor="#F4C76A"
+            android:background="@drawable/widget_section"/>
     </LinearLayout>
 
-    <TextView
-        android:id="@+id/macro"
+    <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:text="환율 —   ·   미10년 —"
-        android:textSize="10sp"
-        android:textColor="#D5E1EF"
-        android:singleLine="true"
-        android:ellipsize="end"
-        android:layout_marginTop="5dp"/>
-
-    <!-- SUPPORT INFO -->
-    <TextView
-        android:id="@+id/top_exposure"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:text="최대 익스포저 —"
-        android:textSize="9sp"
-        android:textColor="#A9BDD5"
-        android:singleLine="true"
-        android:ellipsize="end"
-        android:layout_marginTop="5dp"/>
-
-    <TextView
-        android:id="@+id/date"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:text="Portfolio local"
-        android:textSize="8sp"
-        android:textColor="#6F849E"
-        android:singleLine="true"
-        android:ellipsize="end"
-        android:layout_marginTop="2dp"/>
+        android:layout_height="0dp"
+        android:layout_weight="0.75"
+        android:orientation="vertical"
+        android:gravity="center_vertical"
+        android:padding="14dp"
+        android:layout_marginTop="8dp"
+        android:background="@drawable/widget_section">
+        <TextView
+            android:id="@+id/macro"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="환율 —   ·   미10년 —"
+            android:textSize="13sp"
+            android:textStyle="bold"
+            android:textColor="#D5E1EF"/>
+        <TextView
+            android:id="@+id/top_exposure"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="최대 익스포저 —"
+            android:textSize="11sp"
+            android:textColor="#A9BDD5"
+            android:singleLine="true"
+            android:ellipsize="end"
+            android:layout_marginTop="5dp"/>
+    </LinearLayout>
 </LinearLayout>
