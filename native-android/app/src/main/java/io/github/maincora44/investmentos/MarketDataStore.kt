@@ -4,6 +4,9 @@ import android.content.Context
 import org.json.JSONObject
 import java.net.HttpURLConnection
 import java.net.URL
+import java.time.Instant
+import java.time.ZoneId
+import java.time.format.DateTimeFormatter
 import java.util.Locale
 import java.util.concurrent.Executors
 
@@ -26,6 +29,8 @@ object MarketDataStore {
     private const val PREF = "public_market"
     private const val DATA = "market_json"
     private const val URL_PRIMARY = "https://maincora44-wq.github.io/-ai/market-data.json"
+    private val executor = Executors.newSingleThreadExecutor()
+    private val kstFormatter = DateTimeFormatter.ofPattern("MM/dd HH:mm").withZone(ZoneId.of("Asia/Seoul"))
 
     fun read(context: Context): MarketData? {
         val raw = context.getSharedPreferences(PREF, Context.MODE_PRIVATE).getString(DATA, null) ?: return null
@@ -33,19 +38,25 @@ object MarketDataStore {
     }
 
     fun refreshAsync(context: Context, callback: (Boolean) -> Unit = {}) {
-        Executors.newSingleThreadExecutor().execute {
+        executor.execute {
             val ok = try {
                 val conn = (URL(URL_PRIMARY).openConnection() as HttpURLConnection).apply {
                     connectTimeout = 7000
                     readTimeout = 7000
                     requestMethod = "GET"
-                    setRequestProperty("User-Agent", "InvestmentOS-Android/2.0")
+                    setRequestProperty("User-Agent", "InvestmentOS-Android/2.1")
+                    setRequestProperty("Cache-Control", "no-cache")
                     useCaches = false
                 }
-                val raw = conn.inputStream.bufferedReader().use { it.readText() }
-                require(conn.responseCode in 200..299) { "HTTP " + conn.responseCode }
-                parse(raw)
-                context.getSharedPreferences(PREF, Context.MODE_PRIVATE).edit().putString(DATA, raw).commit()
+                try {
+                    val code = conn.responseCode
+                    require(code in 200..299) { "HTTP " + code }
+                    val raw = conn.inputStream.bufferedReader().use { it.readText() }
+                    parse(raw)
+                    context.getSharedPreferences(PREF, Context.MODE_PRIVATE).edit().putString(DATA, raw).commit()
+                } finally {
+                    conn.disconnect()
+                }
             } catch (_: Exception) { false }
             callback(ok)
         }
@@ -78,15 +89,25 @@ object MarketDataStore {
         return if (v.isFinite()) v else null
     }
 
-    fun marketLabel(code: String, point: MarketPoint): String {
-        val dist = point.distance200Pct?.let { String.format(Locale.US, "%+.1f%%", it) } ?: "—"
-        return code + " · " + point.regime + " " + dist
+    fun regimeShort(point: MarketPoint): String = when (point.regime) {
+        "RISK-ON" -> "RISK-ON"
+        "RISK-OFF" -> "RISK-OFF"
+        "NEUTRAL" -> "NEUTRAL"
+        else -> "—"
     }
 
+    fun distanceLabel(point: MarketPoint): String =
+        point.distance200Pct?.let { String.format(Locale.US, "%+.1f%%", it) } ?: "—"
+
     fun macroLabel(market: MarketData?): String {
-        if (market == null) return "USD/KRW — · US10Y —"
+        if (market == null) return "환율 —   ·   미10년 —"
         val fx = market.usdkrw.value?.let { String.format(Locale.US, "%,.0f", it) } ?: "—"
         val y = market.us10y.value?.let { String.format(Locale.US, "%.2f%%", it) } ?: "—"
-        return "USD/KRW " + fx + " · US10Y " + y
+        return "환율 " + fx + "   ·   미10년 " + y
+    }
+
+    fun kstTime(iso: String): String {
+        if (iso.isBlank() || iso == "UNKNOWN") return "—"
+        return try { kstFormatter.format(Instant.parse(iso)) } catch (_: Exception) { iso.take(16) }
     }
 }
