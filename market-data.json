@@ -1,11 +1,39 @@
 {
   "schema": "investment-os-market-v1",
-  "generated_at": "UNKNOWN",
-  "source": "Pending first GitHub Actions refresh",
+  "generated_at": "2026-10-09T05:39:52Z",
+  "source": "Yahoo Finance chart endpoint via GitHub Actions; best-effort public quotes",
   "privacy": "No portfolio, holdings, balances, device identifiers, or account data are processed.",
-  "sp500": {"value": null, "change_pct": null, "dma200": null, "distance_200dma_pct": null, "regime": "UNKNOWN", "status": "pending"},
-  "kospi": {"value": null, "change_pct": null, "dma200": null, "distance_200dma_pct": null, "regime": "UNKNOWN", "status": "pending"},
-  "usdkrw": {"value": null, "change_pct": null, "dma200": null, "distance_200dma_pct": null, "regime": "N/A", "status": "pending"},
-  "us10y": {"value": null, "change_pct": null, "dma200": null, "distance_200dma_pct": null, "regime": "N/A", "status": "pending"},
+  "sp500": {
+    "value": 7765.3599,
+    "change_pct": -0.467,
+    "dma200": 7245.9637,
+    "distance_200dma_pct": 7.168,
+    "regime": "RISK-ON",
+    "status": "ok"
+  },
+  "kospi": {
+    "value": 6625.9302,
+    "change_pct": -2.616,
+    "dma200": 6364.7251,
+    "distance_200dma_pct": 4.104,
+    "regime": "RISK-ON",
+    "status": "ok"
+  },
+  "usdkrw": {
+    "value": 1339.4,
+    "change_pct": 0.024,
+    "dma200": 1456.6418,
+    "distance_200dma_pct": -8.049,
+    "regime": "N/A",
+    "status": "ok"
+  },
+  "us10y": {
+    "value": 5.231,
+    "change_pct": -0.872,
+    "dma200": 4.473,
+    "distance_200dma_pct": 16.947,
+    "regime": "N/A",
+    "status": "ok"
+  },
   "errors": {}
 }
