@@ -2,18 +2,41 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:id="@+id/widget_root" android:layout_width="match_parent" android:layout_height="match_parent"
     android:orientation="vertical" android:padding="14dp" android:background="@drawable/widget_background">
+
     <TextView android:id="@+id/title" android:layout_width="match_parent" android:layout_height="wrap_content"
-        android:text="INVESTMENT OS" android:textSize="12sp" android:textStyle="bold" android:textColor="#8EBCFF"/>
+        android:text="INVESTMENT OS · v2" android:textSize="11sp" android:textStyle="bold" android:textColor="#8EBCFF"/>
+
     <TextView android:id="@+id/total" android:layout_width="match_parent" android:layout_height="wrap_content"
-        android:text="Import snapshot" android:textSize="24sp" android:textStyle="bold"
-        android:textColor="#FFFFFF" android:singleLine="true" android:ellipsize="end" android:layout_marginTop="6dp"/>
-    <TextView android:id="@+id/detail" android:layout_width="match_parent" android:layout_height="wrap_content"
-        android:text="Open app to import private JSON" android:textSize="11sp" android:textColor="#D0DCEB"
-        android:singleLine="true" android:ellipsize="end" android:layout_marginTop="5dp"/>
-    <TextView android:id="@+id/market" android:layout_width="match_parent" android:layout_height="wrap_content"
-        android:text="US / KR regime: No live data" android:textSize="11sp" android:textColor="#F4C76A"
-        android:singleLine="true" android:ellipsize="end" android:layout_marginTop="5dp"/>
+        android:text="Import snapshot" android:textSize="25sp" android:textStyle="bold"
+        android:textColor="#FFFFFF" android:singleLine="true" android:ellipsize="end" android:layout_marginTop="3dp"/>
+
+    <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content"
+        android:orientation="horizontal" android:layout_marginTop="6dp">
+        <TextView android:id="@+id/asset_left" android:layout_width="0dp" android:layout_height="wrap_content"
+            android:layout_weight="1" android:text="운용 —
+퇴직 —" android:textSize="10sp" android:textColor="#D5E1EF"/>
+        <TextView android:id="@+id/asset_right" android:layout_width="0dp" android:layout_height="wrap_content"
+            android:layout_weight="1" android:text="ISA —
+임직원 —" android:textSize="10sp" android:textColor="#D5E1EF"/>
+    </LinearLayout>
+
+    <TextView android:id="@+id/top_exposure" android:layout_width="match_parent" android:layout_height="wrap_content"
+        android:text="Top exposure: —" android:textSize="10sp" android:textColor="#A9BDD5"
+        android:singleLine="true" android:ellipsize="end" android:layout_marginTop="4dp"/>
+
+    <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content"
+        android:orientation="horizontal" android:layout_marginTop="8dp">
+        <TextView android:id="@+id/us_market" android:layout_width="0dp" android:layout_height="wrap_content"
+            android:layout_weight="1" android:text="US · —" android:textStyle="bold" android:textSize="11sp" android:textColor="#F4C76A"/>
+        <TextView android:id="@+id/kr_market" android:layout_width="0dp" android:layout_height="wrap_content"
+            android:layout_weight="1" android:text="KR · —" android:textStyle="bold" android:textSize="11sp" android:textColor="#F4C76A"/>
+    </LinearLayout>
+
+    <TextView android:id="@+id/macro" android:layout_width="match_parent" android:layout_height="wrap_content"
+        android:text="USD/KRW — · US10Y —" android:textSize="10sp" android:textColor="#D5E1EF"
+        android:singleLine="true" android:ellipsize="end" android:layout_marginTop="4dp"/>
+
     <TextView android:id="@+id/date" android:layout_width="match_parent" android:layout_height="wrap_content"
-        android:text="Local only" android:textSize="10sp" android:textColor="#92A6BE"
-        android:singleLine="true" android:ellipsize="end" android:layout_marginTop="3dp"/>
+        android:text="Portfolio local · Market pending" android:textSize="9sp" android:textColor="#8298B3"
+        android:singleLine="true" android:ellipsize="end" android:layout_marginTop="5dp"/>
 </LinearLayout>
