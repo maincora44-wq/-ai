@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/widget_root" android:layout_width="match_parent" android:layout_height="match_parent"
+    android:orientation="vertical" android:padding="14dp" android:background="@drawable/widget_background">
+    <TextView android:id="@+id/title" android:layout_width="match_parent" android:layout_height="wrap_content"
+        android:text="INVESTMENT OS" android:textSize="12sp" android:textStyle="bold" android:textColor="#8EBCFF"/>
+    <TextView android:id="@+id/total" android:layout_width="match_parent" android:layout_height="wrap_content"
+        android:text="Import snapshot" android:textSize="24sp" android:textStyle="bold"
+        android:textColor="#FFFFFF" android:singleLine="true" android:ellipsize="end" android:layout_marginTop="6dp"/>
+    <TextView android:id="@+id/detail" android:layout_width="match_parent" android:layout_height="wrap_content"
+        android:text="Open app to import private JSON" android:textSize="11sp" android:textColor="#D0DCEB"
+        android:singleLine="true" android:ellipsize="end" android:layout_marginTop="5dp"/>
+    <TextView android:id="@+id/market" android:layout_width="match_parent" android:layout_height="wrap_content"
+        android:text="US / KR regime: No live data" android:textSize="11sp" android:textColor="#F4C76A"
+        android:singleLine="true" android:ellipsize="end" android:layout_marginTop="5dp"/>
+    <TextView android:id="@+id/date" android:layout_width="match_parent" android:layout_height="wrap_content"
+        android:text="Local only" android:textSize="10sp" android:textColor="#92A6BE"
+        android:singleLine="true" android:ellipsize="end" android:layout_marginTop="3dp"/>
+</LinearLayout>
