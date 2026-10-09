@@ -1,42 +1,99 @@
-# Investment OS — Native Samsung Home-Screen Widget
+# Investment OS v2.0 — Native Samsung Home-Screen Widget
 
-A free **real Android AppWidget** written in Kotlin, added alongside the existing Portfolio Lab PWA.
+A free Kotlin Android AppWidget that keeps private portfolio data local while automatically refreshing a **public, non-personal market feed**.
 
-## Privacy and architecture
+## v2 architecture
 
-- Imports the private snapshot JSON with the schema `portfolio-lab-private-snapshot-v1` using Android's system file picker.
-- Validates five brokerage account totals, holding subtotals, and observed investments before storing.
-- Stores JSON only in the app's private SharedPreferences. Android backup is disabled.
-- No INTERNET permission, analytics, tracking, login, broker API or cloud storage.
-- Widget displays the observed investment subtotal and five-account subtotal, with amounts **hidden by default**.
-- Snapshot date and provisional flag are displayed. No fictional live quotes or regime signals.
-- The existing PWA localStorage is **not** shared with the native app; import the JSON again.
-- Repository and GitHub Actions are public: **never commit personal JSON or account numbers**.
-- Debug APK is intended for personal testing. Android may warn about sideloaded apps. Install only your own verified GitHub build.
+```
+Private JSON on Samsung
+        ↓
+App-private SharedPreferences
+        ↓
+Portfolio structure ───────────────┐
+                                   ├─ Native Android AppWidget
+Public market-data.json ← GitHub ──┘
+          ↑
+GitHub Actions hourly updater
+          ↑
+Generic public market symbols only
+```
 
-## Build free APK on GitHub (phone only)
+### Privacy boundary
 
-1. Visit the GitHub repository, open **Actions**.
-2. Choose **Build Android Investment Widget APK**.
-3. Tap **Run workflow** → **Run workflow**.
-4. Open the completed green workflow run.
-5. Under **Artifacts**, download `investment-os-debug-apk` (ZIP). Sign in to GitHub if requested.
-6. In Samsung **My Files → Downloads**, extract ZIP and tap `app-debug.apk`.
-7. If Android blocks installation, follow the system prompt to permit installation from the specific app used to open the APK. Disable that permission afterward.
-8. Launch **Investment OS**, tap **Import local JSON**, select the downloaded private snapshot file.
-9. Tap **Show values on widget** if desired.
-10. Long-press an empty home-screen area → **Widgets** → **Investment OS** → add the widget. Resize as needed.
+Private data stays on the phone:
 
-If the Actions workflow fails, check its build log. Do not assume the APK exists until the build shows success.
+- portfolio snapshot JSON
+- account balances
+- holdings
+- employee-share value
+- privacy/display preference
 
-## Build in Android Studio (optional)
+The app does **not** upload these values. Android backup remains disabled.
 
-Open `native-android` as the project folder. Install Android SDK 35 and JDK 17. Sync Gradle, choose `app`, and select **Build → Build APK(s)**. APK path: `app/build/outputs/apk/debug/app-debug.apk`.
+The app now has the `INTERNET` permission only so it can download:
+`https://maincora44-wq.github.io/-ai/market-data.json`
 
-## Scope and limitations
+That request contains no portfolio fields. The public feed contains generic market data only.
 
-- AppWidget uses native `RemoteViews`; it appears directly on the home screen.
-- Widget refreshes after import and privacy-toggle changes; no background market feed.
-- No historical FX performance calculation in this native widget yet.
-- No actual Android-device or CI build test is claimed until the workflow succeeds.
-- Date-stamped portfolio snapshots are **not live account valuations**.
+## Widget v2
+
+The 4×3 widget shows:
+
+- observed portfolio subtotal
+- active account / retirement / ISA / employee-share buckets
+- largest exposure and share of observed assets
+- US market regime from S&P 500 vs 200-day moving average
+- Korea market regime from KOSPI vs 200-day moving average
+- USD/KRW
+- US 10-year yield
+- portfolio date and public-market timestamp
+
+Portfolio amounts remain hidden by default until the user explicitly enables them.
+
+## Automatic market data
+
+`.github/workflows/market-data-refresh.yml` runs hourly on weekdays at minute 17 and can also be run manually.
+
+`scripts/update_market_data.py` fetches generic public symbols:
+
+- S&P 500: `^GSPC`
+- KOSPI: `^KS11`
+- USD/KRW: `KRW=X`
+- US 10Y yield: `^TNX`
+
+It calculates the latest value, daily change, 200-day moving average, distance from the 200DMA, and a simple regime:
+
+- **RISK-ON**: > +1% above 200DMA
+- **NEUTRAL**: between -1% and +1%
+- **RISK-OFF**: < -1% below 200DMA
+
+The source is a best-effort public Yahoo Finance chart endpoint. It is not a broker-grade or guaranteed real-time data service. If a symbol fails, the updater keeps stale data where available and marks the record stale.
+
+Android requests a widget refresh every 30 minutes. Android/Samsung battery management may delay actual execution. The widget uses the most recently published public feed and preserves cached data when the network is unavailable.
+
+## Install v2 from GitHub Actions
+
+1. Open **Actions → Build Android Investment Widget APK**.
+2. Open the latest successful run.
+3. Download the artifact named **investment-os-v2-debug-apk**.
+4. Extract the ZIP in Samsung **My Files**.
+5. Install `app-debug.apk`.
+6. Android should upgrade the existing app because the application ID is unchanged.
+7. Open **Investment OS v2.0**.
+8. Your existing local snapshot should normally remain after an in-place upgrade. If not, import the JSON again.
+9. Tap **Update public market data now** once.
+10. Long-press the home screen → **Widgets → Investment OS**. Remove/re-add or resize the old widget if the new 4×3 layout is not picked up immediately.
+
+## Build workflow
+
+`.github/workflows/android-widget-apk.yml` builds with JDK 17, Android SDK 35, Gradle 8.9 and uploads a debug APK artifact.
+
+The workflow intentionally uses the preinstalled Android SDK on GitHub's Ubuntu runner and resolves `sdkmanager` by absolute path because the older setup action attempted to install the obsolete Android `tools` package.
+
+## Security notes
+
+- Never commit private portfolio JSON to this public repository.
+- The debug APK is for personal sideload testing.
+- Market quotes are informational snapshots, not execution prices.
+- The market regime is a simple technical heuristic, not an investment recommendation.
+- No broker credentials, analytics SDK, ad SDK, account login, or portfolio cloud sync are included.
