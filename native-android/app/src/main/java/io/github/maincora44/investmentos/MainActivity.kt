@@ -24,7 +24,7 @@ class MainActivity : Activity() {
             setBackgroundColor(Color.rgb(12, 21, 35))
         }
         layout.addView(TextView(this).apply {
-            text = "Investment OS v2.0"
+            text = "Investment OS v2.2"
             textSize = 25f
             setTextColor(Color.WHITE)
         })
@@ -101,7 +101,7 @@ class MainActivity : Activity() {
 
         layout.addView(TextView(this).apply {
             text = "\nSamsung: long-press the home screen → Widgets → Investment OS → Add. " +
-                "v2 is designed for a 4×3 widget and can be resized.\n\n" +
+                "v2.2 is designed as a 5×6 full-page widget and can still be resized.\n\n" +
                 "Market data refreshes automatically when Android updates the widget (requested interval: 30 minutes). " +
                 "Samsung battery optimization and GitHub Pages refresh timing can delay updates. " +
                 "Market quotes are informational snapshots, not broker execution prices."
@@ -147,9 +147,9 @@ class MainActivity : Activity() {
 
         val m = MarketDataStore.read(this)
         marketStatus.text = if (m == null) "Market: waiting for first public-data download."
-        else "Market: " + m.generatedAt +
-            "\n" + MarketDataStore.marketLabel("US", m.sp500) +
-            " · " + MarketDataStore.marketLabel("KR", m.kospi) +
+        else "Market: " + MarketDataStore.kstTime(m.generatedAt) + " KST" +
+            "\nUS " + MarketDataStore.regimeShort(m.sp500) + " " + MarketDataStore.distanceLabel(m.sp500) +
+            " · KR " + MarketDataStore.regimeShort(m.kospi) + " " + MarketDataStore.distanceLabel(m.kospi) +
             "\n" + MarketDataStore.macroLabel(m)
 
         visibilityButton.text = if (show) "Hide values on widget" else "Show values on widget"
