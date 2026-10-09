@@ -38,40 +38,49 @@ class PortfolioWidgetProvider : AppWidgetProvider() {
             val show = SnapshotStore.valuesVisible(context)
 
             views.setTextViewText(R.id.total, when {
-                snapshot == null -> "Import snapshot"
+                snapshot == null -> "JSON 불러오기"
                 !show -> "₩••••"
                 else -> SnapshotStore.shortWon(snapshot.observedTotal)
             })
 
             fun value(v: Long): String = if (show) SnapshotStore.shortWon(v) else "••••"
-            views.setTextViewText(R.id.asset_left, when {
-                snapshot == null -> "운용 —\n퇴직 —"
-                else -> "운용 " + value(snapshot.activeTotal) + "\n퇴직 " + value(snapshot.retirementTotal)
-            })
-            views.setTextViewText(R.id.asset_right, when {
-                snapshot == null -> "ISA —\n임직원 —"
-                else -> "ISA " + value(snapshot.isaTotal) + "\n임직원 " + value(snapshot.employeeTotal)
-            })
+            views.setTextViewText(R.id.active_asset,
+                if (snapshot == null) "운용\n—" else "운용\n" + value(snapshot.activeTotal))
+            views.setTextViewText(R.id.retirement_asset,
+                if (snapshot == null) "연금\n—" else "연금\n" + value(snapshot.retirementTotal))
+            views.setTextViewText(R.id.isa_asset,
+                if (snapshot == null) "ISA\n—" else "ISA\n" + value(snapshot.isaTotal))
+            views.setTextViewText(R.id.employee_asset,
+                if (snapshot == null) "임직원\n—" else "임직원\n" + value(snapshot.employeeTotal))
 
             val topPct = if (snapshot != null && snapshot.observedTotal > 0)
                 snapshot.topExposureValue * 100.0 / snapshot.observedTotal else null
             views.setTextViewText(R.id.top_exposure, when {
-                snapshot == null -> "Top exposure: —"
-                !show -> "Top exposure: " + snapshot.topExposureName + " · ••%"
-                topPct != null -> "Top exposure: " + snapshot.topExposureName + " · " + String.format("%.1f%%", topPct)
-                else -> "Top exposure: —"
+                snapshot == null -> "최대 익스포저 —"
+                !show -> "최대 익스포저 " + snapshot.topExposureName
+                topPct != null -> "최대 익스포저 " + snapshot.topExposureName + " · " + String.format("%.1f%%", topPct)
+                else -> "최대 익스포저 —"
             })
 
-            views.setTextViewText(R.id.us_market,
-                market?.let { MarketDataStore.marketLabel("US", it.sp500) } ?: "US · awaiting data")
-            views.setTextViewText(R.id.kr_market,
-                market?.let { MarketDataStore.marketLabel("KR", it.kospi) } ?: "KR · awaiting data")
+            views.setTextViewText(R.id.us_market, when {
+                market == null -> "미국\n—"
+                else -> "미국\n" + MarketDataStore.regimeShort(market.sp500) + " " +
+                    MarketDataStore.distanceLabel(market.sp500)
+            })
+            views.setTextViewText(R.id.kr_market, when {
+                market == null -> "한국\n—"
+                else -> "한국\n" + MarketDataStore.regimeShort(market.kospi) + " " +
+                    MarketDataStore.distanceLabel(market.kospi)
+            })
             views.setTextViewText(R.id.macro, MarketDataStore.macroLabel(market))
+            views.setTextViewText(
+                R.id.market_time,
+                "MKT " + (market?.let { MarketDataStore.kstTime(it.generatedAt) } ?: "—")
+            )
 
             val pDate = snapshot?.asOf?.replace(" KST", "") ?: "No portfolio"
-            val mDate = market?.generatedAt?.replace("T", " ")?.take(16) ?: "market pending"
-            val provisional = if (snapshot?.provisional == true) " · provisional" else ""
-            views.setTextViewText(R.id.date, pDate + provisional + " · MKT " + mDate)
+            val provisional = if (snapshot?.provisional == true) " · 임직원 잠정" else ""
+            views.setTextViewText(R.id.date, "Portfolio " + pDate + provisional)
 
             val intent = Intent(context, MainActivity::class.java)
             val pending = PendingIntent.getActivity(
