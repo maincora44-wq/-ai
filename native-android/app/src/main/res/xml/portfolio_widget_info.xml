@@ -1,10 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
 <appwidget-provider xmlns:android="http://schemas.android.com/apk/res/android"
-    android:minWidth="250dp" android:minHeight="110dp"
-    android:minResizeWidth="180dp" android:minResizeHeight="100dp"
-    android:targetCellWidth="4" android:targetCellHeight="2"
+    android:minWidth="250dp" android:minHeight="170dp"
+    android:minResizeWidth="180dp" android:minResizeHeight="140dp"
+    android:targetCellWidth="4" android:targetCellHeight="3"
     android:initialLayout="@layout/portfolio_widget"
     android:resizeMode="horizontal|vertical"
     android:widgetCategory="home_screen"
-    android:updatePeriodMillis="0"
+    android:updatePeriodMillis="1800000"
     android:description="@string/widget_description" />
