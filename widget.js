@@ -12,7 +12,12 @@ function aggregateTop(snap){
 }
 function render(){
  const snap=read(SNAP),state=read(STATE);
- if(!snap){$('content').innerHTML='<div class="card empty" style="grid-column:1/-1">Portfolio Lab에서<br><b>Private asset snapshot</b>을 먼저 불러오세요.</div>';$('total').textContent='No snapshot';$('active').textContent='—';$('asof').textContent='개인 자산 데이터 없음';$('status').textContent='GitHub에는 개인 숫자를 저장하지 않음';return}
+ if(!snap){
+ $('content').innerHTML='<div class="card empty" style="grid-column:1/-1"><div>개인 자산 스냅샷이 없습니다.<br><b>이 기기에서만</b> JSON을 불러오세요.<br><br><input id="quickImport" type="file" accept=".json,application/json" style="max-width:260px"></div></div>';
+ $('total').textContent='No snapshot';$('active').textContent='—';$('asof').textContent='개인 자산 데이터 없음';$('status').textContent='GitHub에는 개인 숫자를 저장하지 않음';
+ const q=$('quickImport');q.onchange=async e=>{try{const file=e.target.files[0];if(!file)return;const x=JSON.parse(await file.text());if(!x||x.schema!=='portfolio-lab-private-snapshot-v1'||!Array.isArray(x.accounts)||!Number.isFinite(x.five_account_total))throw Error('Invalid snapshot format');if(x.accounts.reduce((n,a)=>n+a.total,0)!==x.five_account_total)throw Error('Account totals do not reconcile');if(x.accounts.some(a=>a.holdings.reduce((n,h)=>n+h.value,0)!==a.total))throw Error('Holdings do not reconcile');localStorage.setItem(SNAP,JSON.stringify(x));render()}catch(err){alert('Import failed: '+err.message)}};
+ return
+}
  const accounts=Object.fromEntries((snap.accounts||[]).map(a=>[a.name,a]));
  const active=accounts.Comprehensive?.total;
  const retirement=(accounts.DC?.total||0)+(accounts.IRP?.total||0)+(accounts.Pension?.total||0);
