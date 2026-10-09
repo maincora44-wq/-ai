@@ -1,4 +1,4 @@
 <resources>
     <string name="app_name">Investment OS</string>
-    <string name="widget_description">Private investment snapshot on your Samsung home screen</string>
+    <string name="widget_description">Investment OS v2: local portfolio structure plus public market regime data</string>
 </resources>
