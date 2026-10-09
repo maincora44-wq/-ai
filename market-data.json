@@ -1,0 +1,11 @@
+{
+  "schema": "investment-os-market-v1",
+  "generated_at": "UNKNOWN",
+  "source": "Pending first GitHub Actions refresh",
+  "privacy": "No portfolio, holdings, balances, device identifiers, or account data are processed.",
+  "sp500": {"value": null, "change_pct": null, "dma200": null, "distance_200dma_pct": null, "regime": "UNKNOWN", "status": "pending"},
+  "kospi": {"value": null, "change_pct": null, "dma200": null, "distance_200dma_pct": null, "regime": "UNKNOWN", "status": "pending"},
+  "usdkrw": {"value": null, "change_pct": null, "dma200": null, "distance_200dma_pct": null, "regime": "N/A", "status": "pending"},
+  "us10y": {"value": null, "change_pct": null, "dma200": null, "distance_200dma_pct": null, "regime": "N/A", "status": "pending"},
+  "errors": {}
+}
