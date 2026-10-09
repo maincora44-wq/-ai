@@ -1,0 +1,1 @@
+{"id":"./widget","name":"Investment Widget","short_name":"Invest Widget","description":"Local-only one-screen investment dashboard","start_url":"./widget.html","scope":"./","display":"standalone","orientation":"portrait","background_color":"#0b1220","theme_color":"#0b1220","icons":[{"src":"./icon.svg","sizes":"any","type":"image/svg+xml","purpose":"any"}]}
