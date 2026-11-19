@@ -1,13 +1,13 @@
 {
   "schema": "investment-os-market-v1",
-  "generated_at": "2026-11-18T18:50:42Z",
+  "generated_at": "2026-11-19T01:12:41Z",
   "source": "Yahoo Finance chart endpoint via GitHub Actions; best-effort public quotes",
   "privacy": "No portfolio, holdings, balances, device identifiers, or account data are processed.",
   "sp500": {
-    "value": 7351.6401,
-    "change_pct": 0.151,
-    "dma200": 7346.6949,
-    "distance_200dma_pct": 0.067,
+    "value": 7323.6299,
+    "change_pct": -0.23,
+    "dma200": 7346.5548,
+    "distance_200dma_pct": -0.312,
     "regime": "NEUTRAL",
     "status": "ok"
   },
@@ -20,18 +20,18 @@
     "status": "ok"
   },
   "usdkrw": {
-    "value": 1332.0,
-    "change_pct": -0.275,
-    "dma200": 1440.0734,
-    "distance_200dma_pct": -7.505,
+    "value": 1330.1801,
+    "change_pct": -0.212,
+    "dma200": 1439.5084,
+    "distance_200dma_pct": -7.595,
     "regime": "N/A",
     "status": "ok"
   },
   "us10y": {
-    "value": 5.06,
-    "change_pct": -0.843,
+    "value": 5.066,
+    "change_pct": -0.725,
     "dma200": 4.5955,
-    "distance_200dma_pct": 10.107,
+    "distance_200dma_pct": 10.237,
     "regime": "N/A",
     "status": "ok"
   },
