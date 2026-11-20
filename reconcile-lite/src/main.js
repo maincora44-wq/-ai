@@ -2,7 +2,17 @@ import readXlsxFile from 'read-excel-file';
 import {parseCSV,reconcile,formatMoney,csvReport} from './core.js';
 import './style.css';
 const byId=id=>document.getElementById(id);
-const state={A:null,B:null,result:null,sample:false};
+const state={A:null,B:null,result:null,sample:false,voted:false};
+const trackedSources=new Set(['disquiet','iboss','marketslab','direct']);
+const campaignSource=(new URLSearchParams(location.search).get('utm_source')||'').toLowerCase();
+const source=trackedSources.has(campaignSource)?campaignSource:'organic';
+/** Anonymous, aggregate action counters: never send file content, keys, amounts, identifiers or storage tokens. */
+function signal(kind){
+  if(navigator.doNotTrack==='1')return;
+  const name=kind==='analysis-real'?'analysis-real-'+source:kind;
+  fetch('/signals/'+name+'.svg?t='+Date.now(),{method:'GET',cache:'no-store',keepalive:true,referrerPolicy:'no-referrer'}).catch(()=>{});
+}
+
 function showError(message){const el=byId('error');el.hidden=false;el.textContent=message;}
 function clearError(){byId('error').hidden=true;byId('error').textContent='';}
 function headers(rows){return (rows[0]||[]).map((x,i)=>{const v=String(x??'').trim();return v?v+' · '+(i+1)+'열':(i+1)+'열';});}
@@ -43,7 +53,7 @@ const samples={
  A:[['주문번호','정산예정액'],['A1001','59000'],['A1002','33000'],['A1003','26000'],['A1004','50000'],['A1005','10000']],
  B:[['주문번호','입금액'],['A1001','59000'],['A1002','32000'],['A1004','30000'],['A1004','20000'],['A1005','10000'],['A1999','40000']]
 };
-byId('sampleButton').addEventListener('click',()=>{clearError();setRows('A',samples.A,'예시 매출 자료',true);setRows('B',samples.B,'예시 입금 자료',true);byId('workspace').scrollIntoView({behavior:'smooth',block:'start'});});
+byId('sampleButton').addEventListener('click',()=>{signal('demo');clearError();setRows('A',samples.A,'예시 매출 자료',true);setRows('B',samples.B,'예시 입금 자료',true);byId('workspace').scrollIntoView({behavior:'smooth',block:'start'});});
 const statusLabel={matched:'일치',different:'금액 차이',onlyA:'A만 존재',onlyB:'B만 존재'};
 function renderRows(){
   const result=state.result;if(!result)return;
@@ -67,7 +77,19 @@ byId('runButton').addEventListener('click',()=>{
     for(const [id,key] of [['matchedCount','matched'],['differentCount','different'],['onlyACount','onlyA'],['onlyBCount','onlyB']])byId(id).textContent=result.counts[key].toLocaleString('ko-KR');
     byId('totalCount').textContent=result.rows.length.toLocaleString('ko-KR')+'건';
     byId('sumInfo').textContent='A 합계 '+formatMoney(result.sumA)+'원 · B 합계 '+formatMoney(result.sumB)+'원 · 총 차이 '+formatMoney(result.sumA-result.sumB)+'원 · 중복 거래번호 A '+result.duplicatesA+'건 / B '+result.duplicatesB+'건';
-    byId('results').hidden=false;renderRows();byId('results').scrollIntoView({behavior:'smooth'});
+    byId('results').hidden=false;renderRows();signal(A.sample||B.sample?'analysis-demo':'analysis-real');byId('results').scrollIntoView({behavior:'smooth'});
   }catch(e){showError(e.message||'분석 오류');}
 });
-byId('downloadButton').addEventListener('click',()=>{if(!state.result)return;const blob=new Blob([csvReport(state.result)],{type:'text/csv;charset=utf-8'});const url=URL.createObjectURL(blob);const a=document.createElement('a');a.href=url;a.download='맞춰봄_대사결과_'+new Date().toISOString().slice(0,10)+'.csv';a.click();setTimeout(()=>URL.revokeObjectURL(url),1000);});
+byId('downloadButton').addEventListener('click',()=>{if(!state.result)return;signal('download');const blob=new Blob([csvReport(state.result)],{type:'text/csv;charset=utf-8'});const url=URL.createObjectURL(blob);const a=document.createElement('a');a.href=url;a.download='맞춰봄_대사결과_'+new Date().toISOString().slice(0,10)+'.csv';a.click();setTimeout(()=>URL.revokeObjectURL(url),1000);});
+
+byId('feedbackLink').addEventListener('click',()=>signal('feedback-link'));
+for(const [id,kind,message] of [
+  ['voteHelpful','helpful','고마워요. 도움이 됐다는 응답을 받았습니다. 자세한 의견은 후기 링크로 남겨주세요.'],
+  ['voteNotFit','notfit','알려줘서 고마워요. 아직 맞지 않는 파일 형식이 있군요. 후기에 필요한 형식을 알려주세요.']
+]){
+  byId(id).addEventListener('click',()=>{
+    if(state.voted)return;
+    state.voted=true;signal(kind);byId('voteHelpful').disabled=true;byId('voteNotFit').disabled=true;
+    byId('voteMessage').textContent=message;
+  });
+}
