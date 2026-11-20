@@ -1,0 +1,7 @@
+import test from 'node:test';import assert from 'node:assert/strict';
+import {parseAmount,parseCSV,reconcile,csvReport} from '../src/core.js';
+test('금액 parser: 정수·쉼표·음수·소수',()=>{assert.equal(parseAmount('₩1,234'),123400);assert.equal(parseAmount('(1,500)'),-150000);assert.equal(parseAmount('-10.50'),-1050);assert.equal(parseAmount('KRW 120원'),12000);assert.throws(()=>parseAmount('1,2'));});
+test('CSV handles quoted delimiter and embedded newline',()=>{const rows=parseCSV('id,amount,note\r\nA,120,"hello,world"\r\nB,10,"x\ny"\r\n');assert.equal(rows.length,3);assert.equal(rows[1][2],'hello,world');assert.equal(rows[2][2],'x\ny');});
+test('reconcile aggregates duplicate transactions and identifies missing or difference',()=>{const a=[['key','amount'],['A','1000'],['B','2000'],['C','3000'],['D','4000']];const b=[['key','amount'],['A','1000'],['B','1500'],['C','1000'],['C','2000'],['E','4000']];const out=reconcile(a,b,0,1,0,1);assert.deepEqual(out.counts,{matched:2,different:1,onlyA:1,onlyB:1});assert.equal(out.duplicatesB,1);assert.equal(out.sumA-out.sumB,50000);});
+test('invalid rows are not silently ignored',()=>{assert.throws(()=>reconcile([['k','v'],['','12']],[['k','v'],['x','12']],0,1,0,1),/거래번호 없음/);assert.throws(()=>reconcile([['k','v'],['x','wat']],[['k','v'],['x','12']],0,1,0,1),/올바르지 않은 금액/);});
+test('CSV report neutralizes formula injection',()=>{const result=reconcile([['k','v'],['=HYPERLINK("x")','10']],[['k','v'],['=HYPERLINK("x")','10']],0,1,0,1);assert.match(csvReport(result),/'=HYPERLINK/);});
